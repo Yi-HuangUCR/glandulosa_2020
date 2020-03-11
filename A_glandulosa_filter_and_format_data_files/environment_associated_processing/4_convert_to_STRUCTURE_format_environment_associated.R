@@ -1,0 +1,112 @@
+library(stringr)
+
+# Read in simplified VCF file.
+RAD <- read.table("output_from_step_two_environment_associated.txt", 
+	header = F, stringsAsFactor = F)
+RAD <- as.matrix(RAD)
+
+# Clip off the first 2 columns of the matrix. These are the CHROM, REF and ALT columns.
+RAD2 <- as.matrix( RAD[ , 4:dim(RAD)[2] ] )
+
+# Make names vector for value matching.
+sample_names <- RAD2[1, ]
+
+# Eliminate the first row (the sample names).
+RAD3 <- RAD2[-1, ]
+
+# Read in table of population/taxa data.
+ref_table <- read.table("A_gland_samples.csv", sep = ",", header = T, stringsAsFactors = F)
+
+# Make CHROM, REF and ALT vectors.
+CHROM <- RAD[-1, 1]
+REF <- RAD[-1, 2]
+ALT <- RAD[-1, 3]
+
+# Calculate the lengths of the REF strings. Use this to eliminate the ones with more ..
+# .. than one base given for each. Also eliminate those with more than three ALT alleles.
+REF_length <- nchar(REF)
+longer_than_one_ref <- REF_length > 1
+more_than_one_alt <- nchar(ALT) > 1
+lose_these <- longer_than_one_ref | more_than_one_alt
+GT_mat <- RAD3[-which(lose_these), ]
+CHROM <- CHROM[ -which(lose_these) ]
+REF <- REF[ -which(lose_these) ]
+ALT <- ALT[ -which(lose_these) ]
+
+# Toss out any SNPs that have an N listed for the REF or ALT alleles.
+N_listed <- (REF == "N") | (ALT == "N")
+keep_these <- which( !(N_listed) )
+CHROM <- CHROM[keep_these]
+REF <- REF[keep_these]
+ALT <- ALT[keep_these]
+GT_mat <- GT_mat[keep_these, ]
+
+# Remove SNPs that have more numbers in genotypes than entries in REF and ALT together.
+library(stringr)
+has_a_0 <- apply(GT_mat, 1, FUN = function(x){ any(str_detect(x, pattern = "0")) } )
+has_a_1 <- apply(GT_mat, 1, FUN = function(x){ any(str_detect(x, pattern = "1")) } )
+okay_for_1 <- has_a_0 & has_a_1
+no_other_characters <- apply( GT_mat, 1, FUN = function(x){all( unlist( strsplit(x, "/") ) %in% c(".", "0", "1") ) } )
+okay <- (okay_for_1) & no_other_characters
+PASS <- ifelse(okay, "YES", "NO")
+REF <- REF[which(okay)]
+ALT <- ALT[which(okay)]
+GT_mat <- GT_mat[which(okay), ]
+
+
+# Test if each RAD fragment entry is the same as the previous entry.
+n_SNPs <- dim(GT_mat)[1]
+last_one <- CHROM[1:(n_SNPs - 1)]
+this_one <- CHROM[2:n_SNPs]
+is_same_frag <- this_one == last_one
+
+# Keep first entries per RAD fragment, and lose the first 10 columns.
+keep_this <- c(TRUE, !(is_same_frag))
+GT_mat <- GT_mat[keep_this, ]
+
+# Reformat into STRUCTURE format.
+n_indivs <- dim(GT_mat)[2]
+for(i in 1:n_indivs)
+{
+        if(i == 1)
+        {
+                first <- substr(GT_mat[, i], 1, 1)
+                which_missing <- which( first == "." )
+                first[which_missing] <- "-9"
+                second <- substr(GT_mat[, i], 3, 3)
+                second[which_missing] <- "-9"
+                formatted <- rbind(first, second)
+        }else
+        {
+                first <- substr(GT_mat[, i], 1, 1)
+                which_missing <- which( first == "." )
+                first[which_missing] <- "-9"
+                second <- substr(GT_mat[, i], 3, 3)
+                second[which_missing] <- "-9"
+                formatted <- rbind(formatted, first, second)
+        }
+}
+
+
+# Make numeric IDs for samples.
+samples_fac <- as.factor(sample_names)
+samples_num <- as.numeric(samples_fac)
+
+# Make subspecies numeric IDs.
+subsp <- ref_table[match(sample_names, ref_table$sample), 3]
+subsp_fac <- as.factor(subsp)
+subsp_num <- as.numeric(subsp_fac)
+
+# Attach numeric sample IDs and subspecies IDs to the STRUCTURE format data.
+individual <- rep(samples_num, each = 2)
+population <- rep(subsp_num, each = 2) 
+final_formatted <- cbind(individual, population, formatted)
+
+# Write STRUCTURE format file as a table.
+write.table(file = "A_glandulosa_environment_associated.str", x = final_formatted,
+        quote = F, row.names = F, col.names = F)
+
+# Write a table relating the sample names and subspecies determinations to the numeric IDs.
+df <- data.frame(samples_num, sample_names, subsp_num, subsp)
+write.table(file = "A_glandulosa_structure_key_table_environment_associated.txt", x = df,
+        quote = F, row.names = F, col.names = T)
