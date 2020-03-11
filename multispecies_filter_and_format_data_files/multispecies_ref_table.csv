@@ -1,0 +1,30 @@
+Name_in_SNP_spread,Collection_number,Determination,Species,Compact_label
+28,AS 42684,glandulosa subsp. crassifolia,glandulosa,gln_cras_1
+29,AS 42680,glandulosa subsp. crassifolia,glandulosa,gln_cras_2
+C3,ENC-21,glandulosa subsp. crassifolia,glandulosa,gln_cras_3
+32,YH 3,glandulosa subsp. gabrielensis,glandulosa,gln_gab_1
+MC4,YH 6,glandulosa subsp. gabrielensis,glandulosa,gln_gab_2
+H2,Upper Crystal Lake-1,glandulosa subsp. gabrielensis,glandulosa,gln_gab_3
+24,Av.Escala,glandulosa subsp. glandulosa,glandulosa,gln_gln_1
+54,YH 23,glandulosa subsp. glandulosa,glandulosa,gln_gln_2
+C6,Santa Monica-1,glandulosa subsp. glandulosa,glandulosa,gln_gln_3
+10,AS 42699,glandulosa subsp. leucophylla,glandulosa,gln_le_1
+67,YH 37,glandulosa subsp. leucophylla,glandulosa,gln_le_2
+80,Dylan-276,glauca,glauca,glauca_1
+A8,Santa Babara-8,glauca,glauca,glauca_2
+B9,"""Santa Barbara 'glauca # 1'""",glauca,glauca,glauca_3
+D5,Hwy33-1,glauca,glauca,glauca_4
+F1,LCP-1,glauca,glauca,glauca_5
+F2,LCP-2,glauca,glauca,glauca_6
+95,JmsRsr-35,pringlei,pringlei,pringlei_1
+96,JmsRsr-37,pringlei,pringlei,pringlei_2
+Julian4,YH 44,pringlei,pringlei,pringlei_3
+F6,ASC43396,pungens,pungens,pungens_1
+F8,ASC43401,pungens,pungens,pungens_2
+F9,Hwy79 2.00 02/12/2018,pungens,pungens,pungens_3
+I7,HarrisGradRd-1,purissima,purissima,pur_1
+I9,HarrisGradRd-3,purissima,purissima,pur_2
+J2,HarrisGradRd-5,purissima,purissima,pur_3
+F3,ASC43392,rainbowensis,rainbowensis,rainbow_1
+F4,ASC43394,rainbowensis,rainbowensis,rainbow_2
+F5,ASC43395,rainbowensis,rainbowensis,rainbow_3
